@@ -1,0 +1,64 @@
+1.0
+	Initial Release, for KSP 1.1.2
+
+1.1
+	Added possibility to adjust scale for Survey Nav Waypoints.
+	Labels for inactive markers are gray now in mod settings window.
+	NavBall will not be afraid of mouse cursor when Modifier Key is pressed.
+	Fixed vessel control bug on Map View when "Stock AutoHide NavBall" feature is turned off.
+
+1.2
+	Added possibility to change markers colors.
+
+1.2.1
+	Fixed mod toggle visibility in IVA.
+
+1.2.2
+	Fixed color picker bug with dragging window.
+	Fixed mod toggle relocation bug.
+
+1.3
+	Updated for KSP 1.1.3.
+	Added possibility to revert color for selected marker on color picker.
+
+1.4
+	Fixed game FPS loss bug.
+
+1.4.1
+	Updated for KSP 1.2.
+
+1.5
+	Updated for KSP 1.2.2.
+
+1.6
+	Implemented ghost markers feature.
+
+1.7
+	Fixed non-patched conic issue.
+
+1.8
+	Updated for KSP 1.3.
+	Added markers overlapping priorities feature.
+
+1.9
+	Updated for KSP 1.4.x
+	Added Cancel button for all configuration windows.
+
+1.9.1
+	Recompiled for KSP 1.7.x.
+
+1.9.2
+	Recompiled for KSP 1.8+.
+
+1.9.3
+	Adoption by LGG
+	Recompiled form KSP 1.12
+	Removed linuxgurugamer.cs, replaced with calls to Toolbarcontroller
+	Added toolbarcontroller as dependency
+	Added version file
+	Added AssemblyVersion.tt
+	Added InstallChecker
+	Moved config file into PluginsData
+	Added Changelog
+	Fixed button icon not hiding when F2 is pressed
+	Moved Icons into PluginData directory

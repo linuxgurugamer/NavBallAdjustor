@@ -230,17 +230,17 @@
             /// <summary>
             /// The icon "off" path.
             /// </summary>
-            public const string IconOffPath = "NavBallAdjustor/Icons/Off";
+            public const string IconOffPath = "NavBallAdjustor/PluginData/Icons/Off";
 
             /// <summary>
             /// The icon "on" path.
             /// </summary>
-            public const string IconOnPath = "NavBallAdjustor/Icons/On";
+            public const string IconOnPath = "NavBallAdjustor/PluginData/Icons/On";
 
             /// <summary>
             /// The icon "push" path.
             /// </summary>
-            public const string IconPushPath = "NavBallAdjustor/Icons/Push";
+            public const string IconPushPath = "NavBallAdjustor/PluginData/Icons/Push";
         }
 
         /// <summary>

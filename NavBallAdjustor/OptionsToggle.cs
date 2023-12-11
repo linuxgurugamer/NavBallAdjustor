@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using ToolbarControl_NS;
 
 namespace NavBallAdjustor
 {
@@ -150,9 +151,12 @@ namespace NavBallAdjustor
         /// </summary>
         public OptionsToggle()
         {
-            OffTexture = LinuxGuruGamer.GetTexture(ModStrings.OptionsToggle.IconOffPath);
-            OnTexture = LinuxGuruGamer.GetTexture(ModStrings.OptionsToggle.IconOnPath);
-            PushTexture = LinuxGuruGamer.GetTexture(ModStrings.OptionsToggle.IconPushPath);
+            OffTexture = new Texture2D(2, 2);
+            ToolbarControl.LoadImageFromFile(ref OffTexture, KSPUtil.ApplicationRootPath + "GameData/" + ModStrings.OptionsToggle.IconOffPath);
+            OnTexture = new Texture2D(2, 2);
+            ToolbarControl.LoadImageFromFile(ref OnTexture, KSPUtil.ApplicationRootPath + "GameData/" + ModStrings.OptionsToggle.IconOnPath);
+            PushTexture = new Texture2D(2, 2);
+            ToolbarControl.LoadImageFromFile(ref PushTexture, KSPUtil.ApplicationRootPath + "GameData/" + ModStrings.OptionsToggle.IconPushPath);
 
             this.Style = new GUIStyle();
             this.Style.normal.background = OffTexture;

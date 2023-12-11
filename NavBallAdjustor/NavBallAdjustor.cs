@@ -1,8 +1,11 @@
 ﻿using System;
-using KSP.IO;
+using System.IO;
+//using KSP.IO;
 using KSP.UI;
 using KSP.UI.Screens.Flight;
 using UnityEngine;
+using ToolbarControl_NS;
+using KSP.IO;
 
 namespace NavBallAdjustor
 {
@@ -220,7 +223,7 @@ namespace NavBallAdjustor
         /// <summary>
         /// The GUI toggle details.
         /// </summary>
-        private OptionsToggle Toggle;
+        private OptionsToggle ToggleBtn;
 
         /// <summary>
         /// The previous NavBall position X.
@@ -261,9 +264,9 @@ namespace NavBallAdjustor
         {
             get
             {
-                #if DEBUG
+#if DEBUG
                 return true;
-                #endif
+#endif
                 return false;
             }
         }
@@ -453,13 +456,19 @@ namespace NavBallAdjustor
         public void Start()
         {
             this.HashCode = ModStrings.ModName.GetHashCode();
-            this.ColorPickerTexture = LinuxGuruGamer.GetTexture("NavBallAdjustor/Icons/ColorPicker");
+            this.ColorPickerTexture = new Texture2D(2, 2);
+            ToolbarControl.LoadImageFromFile(ref ColorPickerTexture, KSPUtil.ApplicationRootPath + "GameData/NavBallAdjustor/PluginData/Icons/ColorPicker");
 
             LoadConfig();
 
             GameEvents.onLevelWasLoaded.Add(OnLevelLoaded);
+            GameEvents.onHideUI.Add(OnHideUI);
+            GameEvents.onShowUI.Add(OnShowUI);
             MapView.OnEnterMapView += OnEnterMap;
         }
+        bool visible = true;
+        void OnHideUI() {  visible = false; }
+        void OnShowUI() { visible = true;}
 
         /// <summary>
         /// Called on instance destroy.
@@ -544,8 +553,8 @@ namespace NavBallAdjustor
         /// </summary>
         public void OnGUI()
         {
-            if (this.Toggle == null || !this.IsCameraTurnedOn() ||
-                FlightUIModeController.Instance.navBall.panelTransform == null)
+            if (this.ToggleBtn == null || !this.IsCameraTurnedOn() ||
+                FlightUIModeController.Instance.navBall.panelTransform == null || !visible)
             {
                 return;
             }
@@ -558,14 +567,14 @@ namespace NavBallAdjustor
                 this.PrevNavBallPosY = this.NBall.Position.y;
 
                 // Reposition toggle button.
-                this.Toggle.Width = OptionsToggle.DefaultWidth * this.NBall.Scale.x * GameSettings.UI_SCALE;
-                this.Toggle.Height = OptionsToggle.DefaultHeight * this.NBall.Scale.y * GameSettings.UI_SCALE;
-                this.Toggle.Left = this.NBall.TransformScreenCenterX + (ToggleLeftOffset * this.NBall.Scale.x * GameSettings.UI_SCALE);
-                this.Toggle.Top = this.NBall.TextureTopScreenY - this.Toggle.Height;
+                this.ToggleBtn.Width = OptionsToggle.DefaultWidth * this.NBall.Scale.x * GameSettings.UI_SCALE;
+                this.ToggleBtn.Height = OptionsToggle.DefaultHeight * this.NBall.Scale.y * GameSettings.UI_SCALE;
+                this.ToggleBtn.Left = this.NBall.TransformScreenCenterX + (ToggleLeftOffset * this.NBall.Scale.x * GameSettings.UI_SCALE);
+                this.ToggleBtn.Top = this.NBall.TextureTopScreenY - this.ToggleBtn.Height;
 
-                if (this.Toggle.Top > GameSettings.SCREEN_RESOLUTION_HEIGHT - 50f)
+                if (this.ToggleBtn.Top > GameSettings.SCREEN_RESOLUTION_HEIGHT - 50f)
                 {
-                    this.Toggle.Top = GameSettings.SCREEN_RESOLUTION_HEIGHT + 50f;
+                    this.ToggleBtn.Top = GameSettings.SCREEN_RESOLUTION_HEIGHT + 50f;
                 }
             }
 
@@ -581,10 +590,10 @@ namespace NavBallAdjustor
             }
 
             bool toggleResult = !FlightDriver.Pause && GUI.Toggle(
-                this.Toggle.Rectangle,
+                this.ToggleBtn.Rectangle,
                 this.ShowOptions || this.ShowColorOptions || this.ShowPriorityOptions,
                 GUIContent.none,
-                this.Toggle.Style);
+                this.ToggleBtn.Style);
 
             this.ShowOptions = toggleResult && !this.ShowColorOptions && !this.ShowPriorityOptions;
             this.ShowColorOptions = toggleResult && !this.ShowOptions && !this.ShowPriorityOptions;
@@ -720,16 +729,26 @@ namespace NavBallAdjustor
             }
         }
 
+        string ConfigFileName { get { return KSPUtil.ApplicationRootPath + "GameData/" + ModStrings.ModName + "/PluginData/"+ ModStrings.ModName+".cfg"; } }
+
         /// <summary>
         /// Loads the mod configuration.
         /// </summary>
         public void LoadConfig()
         {
+#if false
             if (File.Exists<NavBallAdjustor>(ModStrings.ConfigFile))
             {
                 ConfigNode config = ConfigNode.Load(IOUtils.GetFilePathFor(this.GetType(), ModStrings.ConfigFile));
                 ConfigNode.LoadObjectFromConfig(this, config);
             }
+#else
+            if (System.IO.File.Exists(ConfigFileName))
+            {
+                ConfigNode config = ConfigNode.Load(ConfigFileName);
+                ConfigNode.LoadObjectFromConfig(this, config);
+            }
+#endif
         }
 
         /// <summary>
@@ -737,9 +756,15 @@ namespace NavBallAdjustor
         /// </summary>
         private void SaveConfig()
         {
+#if false
             ConfigNode node = new ConfigNode(ModStrings.ModName);
             ConfigNode.CreateConfigFromObject(this, node);
             node.Save(IOUtils.GetFilePathFor(this.GetType(), ModStrings.ConfigFile));
+#else
+            ConfigNode node = new ConfigNode(ModStrings.ModName);
+            ConfigNode.CreateConfigFromObject(this, node);
+            node.Save(ConfigFileName);
+#endif
         }
 
         /// <summary>
@@ -753,7 +778,7 @@ namespace NavBallAdjustor
 
             this.NBall = new NavBallHelper();
             this.PopulateNavBallMarkers();
-            
+
             if (this.NavBallCursor != null)
             {
                 this.NBCursorInitialScale = this.NavBallCursor.localScale;
@@ -765,7 +790,7 @@ namespace NavBallAdjustor
             }
 
             // Load toggle details.
-            this.Toggle = new OptionsToggle();
+            this.ToggleBtn = new OptionsToggle();
         }
 
         /// <summary>
@@ -853,7 +878,7 @@ namespace NavBallAdjustor
             this.NBAfraidMouseOnMapView = GUILayout.Toggle(this.NBAfraidMouseOnMapView, ModStrings.OptionLabel.AfraidMouseOnMap);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            this.NBAlwaysHideOnMap = GUILayout.Toggle(this.NBAlwaysHideOnMap, ModStrings.OptionLabel.AlwaysHideOnMap, GUILayout.MaxWidth(285f));            
+            this.NBAlwaysHideOnMap = GUILayout.Toggle(this.NBAlwaysHideOnMap, ModStrings.OptionLabel.AlwaysHideOnMap, GUILayout.MaxWidth(285f));
             this.NBAfraidMouseOnFlightView = GUILayout.Toggle(this.NBAfraidMouseOnFlightView, ModStrings.OptionLabel.AfraidMouseOnFlight);
             GUILayout.EndHorizontal();
 
@@ -888,7 +913,7 @@ namespace NavBallAdjustor
         private void CreateScaleOption(bool isActive, string label, float scale, Action<float> setValue,
             float minScale = 0f, float maxScale = 3f, float defaultValue = 1f)
         {
-            GUILayout.BeginHorizontal();            
+            GUILayout.BeginHorizontal();
 
             // Build option label.
             if (!isActive)
@@ -900,7 +925,7 @@ namespace NavBallAdjustor
 
             // Build slider to change option value.
             setValue(GUILayout.HorizontalSlider(scale, minScale, maxScale, GUILayout.Width(300f)));
-            
+
             // Build option value label.
             if (IsDebug)
             {
@@ -914,9 +939,9 @@ namespace NavBallAdjustor
             // Build option Reset button.
             if (GUILayout.Button(ModStrings.Button.Reset))
             {
-                setValue(defaultValue);          
+                setValue(defaultValue);
             }
-            
+
             GUILayout.EndHorizontal();
         }
 
@@ -942,7 +967,7 @@ namespace NavBallAdjustor
                 this.NavBallBurnArrow = navBallVectors.Find(ModStrings.NavBallTransform.BurnArrow);
                 this.NavBallTarget = navBallVectors.Find(ModStrings.NavBallTransform.Target);
                 this.NavBallAntiTarget = navBallVectors.Find(ModStrings.NavBallTransform.AntiTarget);
-                
+
                 this.ProgradeMaterial = this.NavBallPrograde.GetComponent<MeshRenderer>().materials[0];
                 this.RetrogradeMaterial = this.NavBallRetrograde.GetComponent<MeshRenderer>().materials[0];
                 this.RadialInMaterial = this.NavBallRadialIn.GetComponent<MeshRenderer>().materials[0];
@@ -953,7 +978,7 @@ namespace NavBallAdjustor
                 this.BurnArrowMaterial = this.NavBallBurnArrow.GetComponent<MeshRenderer>().materials[0];
                 this.TargetMaterial = this.NavBallTarget.GetComponent<MeshRenderer>().materials[0];
                 this.AntiTargetMaterial = this.NavBallAntiTarget.GetComponent<MeshRenderer>().materials[0];
-            }            
+            }
         }
 
         /// <summary>
@@ -993,7 +1018,7 @@ namespace NavBallAdjustor
         {
             // Apply scale.
             this.NavBallCursor.localScale = this.NBCursorInitialScale * scale;
-            
+
             // The scale for NavBall cursor works a little incorrectly, because of incorrect transform anchor.
             // So I should update cursor position as well.
             this.NavBallCursor.localPosition = new Vector3(
@@ -1045,7 +1070,7 @@ namespace NavBallAdjustor
             {
                 this.UpdateGhostMarker(this.ProgradeMaterial, this.NavBallPrograde, this.NBProgradeScale);
                 this.UpdateGhostMarker(this.RetrogradeMaterial, this.NavBallRetrograde, this.NBProgradeScale);
-                
+
                 if (FlightGlobals.speedDisplayMode == FlightGlobals.SpeedDisplayModes.Orbit)
                 {
                     this.UpdateGhostMarker(this.RadialInMaterial, this.NavBallRadialIn, this.NBRadialScale);
