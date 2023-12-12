@@ -52,7 +52,7 @@
 
 1.9.3
 	Adoption by LGG
-	Recompiled form KSP 1.12
+	Recompiled for KSP 1.12
 	Removed linuxgurugamer.cs, replaced with calls to Toolbarcontroller
 	Added toolbarcontroller as dependency
 	Added version file

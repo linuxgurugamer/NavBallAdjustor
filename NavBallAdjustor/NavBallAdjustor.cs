@@ -1,11 +1,8 @@
 ﻿using System;
-using System.IO;
-//using KSP.IO;
 using KSP.UI;
 using KSP.UI.Screens.Flight;
 using UnityEngine;
 using ToolbarControl_NS;
-using KSP.IO;
 
 namespace NavBallAdjustor
 {
@@ -266,8 +263,9 @@ namespace NavBallAdjustor
             {
 #if DEBUG
                 return true;
-#endif
+#else
                 return false;
+#endif
             }
         }
 
@@ -447,7 +445,7 @@ namespace NavBallAdjustor
                     && FlightGlobals.ActiveVessel?.navigationWaypoint != null;
             }
         }
-        #endregion
+#endregion
 
         #region Public_Methods
         /// <summary>
@@ -553,8 +551,8 @@ namespace NavBallAdjustor
         /// </summary>
         public void OnGUI()
         {
-            if (this.ToggleBtn == null || !this.IsCameraTurnedOn() ||
-                FlightUIModeController.Instance.navBall.panelTransform == null || !visible)
+            if (!visible || this.ToggleBtn == null || !this.IsCameraTurnedOn() ||
+                FlightUIModeController.Instance.navBall.panelTransform == null)
             {
                 return;
             }
@@ -736,19 +734,11 @@ namespace NavBallAdjustor
         /// </summary>
         public void LoadConfig()
         {
-#if false
-            if (File.Exists<NavBallAdjustor>(ModStrings.ConfigFile))
-            {
-                ConfigNode config = ConfigNode.Load(IOUtils.GetFilePathFor(this.GetType(), ModStrings.ConfigFile));
-                ConfigNode.LoadObjectFromConfig(this, config);
-            }
-#else
             if (System.IO.File.Exists(ConfigFileName))
             {
                 ConfigNode config = ConfigNode.Load(ConfigFileName);
                 ConfigNode.LoadObjectFromConfig(this, config);
             }
-#endif
         }
 
         /// <summary>
@@ -756,15 +746,9 @@ namespace NavBallAdjustor
         /// </summary>
         private void SaveConfig()
         {
-#if false
-            ConfigNode node = new ConfigNode(ModStrings.ModName);
-            ConfigNode.CreateConfigFromObject(this, node);
-            node.Save(IOUtils.GetFilePathFor(this.GetType(), ModStrings.ConfigFile));
-#else
             ConfigNode node = new ConfigNode(ModStrings.ModName);
             ConfigNode.CreateConfigFromObject(this, node);
             node.Save(ConfigFileName);
-#endif
         }
 
         /// <summary>

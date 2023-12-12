@@ -120,7 +120,7 @@ namespace NavBallAdjustor
         /// <summary>
         /// The default cursor color.
         /// </summary>
-        private Color DefaultCursorColor;
+        //private Color DefaultCursorColor;
 
         /// <summary>
         /// The default prograde color.
@@ -160,7 +160,7 @@ namespace NavBallAdjustor
         /// <summary>
         /// The NavBall cursor material.
         /// </summary>
-        private Material CursorMaterial = null;
+        //private Material CursorMaterial = null;
 
         /// <summary>
         /// The NavBall prograde marker material.
